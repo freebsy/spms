@@ -24,18 +24,15 @@ public class MemberListServlet extends HttpServlet {
 	public void doGet(
 			HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
-		
-
 		try {
 			ServletContext sc = this.getServletContext();
-			Connection servletConn = (Connection) sc.getAttribute("conn");
+			Connection conn = (Connection) sc.getAttribute("conn");
 			
 			// 
 			MemberDao memberDao = new MemberDao();
 			// memberDao.connection == null;
 			
-			memberDao.setConnetion(servletConn);
+			memberDao.setConnetion(conn);
 			// memberDao.connectio == servletConn
 			
 			List<Member> members = memberDao.selectList();
