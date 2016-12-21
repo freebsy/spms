@@ -1,7 +1,6 @@
 package spms.servlets;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -26,21 +25,11 @@ public class MemberListServlet extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			ServletContext sc = this.getServletContext();
-			Connection conn = (Connection) sc.getAttribute("conn");
-			
-			// 
-			MemberDao memberDao = new MemberDao();
-			// memberDao.connection == null;
-			
-			memberDao.setConnetion(conn);
-			// memberDao.connectio == servletConn
-			
-			List<Member> members = memberDao.selectList();
-			request.setAttribute("members", members);
-			
+			MemberDao memberDao = (MemberDao) sc.getAttribute("memberDao");
+					
+			request.setAttribute("members", memberDao.selectList());
 			
 			response.setContentType("text/html; charset=UTF-8");
-			// JSP로 출력을 위임한다.
 			RequestDispatcher rd = request.getRequestDispatcher(
 					"/member/MemberList.jsp");
 			rd.include(request, response);
@@ -50,10 +39,6 @@ public class MemberListServlet extends HttpServlet {
 			request.setAttribute("error", e);
 			RequestDispatcher rd = request.getRequestDispatcher("/Error.jsp");
 			rd.forward(request, response);
-			
-		} finally {
-			
-			//try {if (conn != null) conn.close();} catch(Exception e) {}
 		}
 
 	}
