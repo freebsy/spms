@@ -28,11 +28,7 @@ public class MemberUpdateServlet extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			ServletContext sc = this.getServletContext();
-			Connection conn = (Connection) sc.getAttribute("conn");   
-				
-
-			MemberDao memberDao = new MemberDao();
-			memberDao.setConnetion(conn);
+			MemberDao memberDao = (MemberDao)sc.getAttribute("memberDao");
 			
 			Member member = memberDao.selectOne(
 				Integer.parseInt(request.getParameter("no")));
@@ -59,10 +55,7 @@ public class MemberUpdateServlet extends HttpServlet {
 		
 		try {
 			ServletContext sc = this.getServletContext();
-			Connection conn = (Connection) sc.getAttribute("conn");    
-			
-			MemberDao memberDao = new MemberDao();
-			memberDao.setConnetion(conn);
+			 MemberDao memberDao = (MemberDao) sc.getAttribute("memberDao");  
 			
 			memberDao.update(new Member()
 				 .setNo(Integer.parseInt(request.getParameter("no")))

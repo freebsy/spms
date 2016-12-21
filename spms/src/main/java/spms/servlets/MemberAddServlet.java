@@ -37,10 +37,8 @@ public class MemberAddServlet extends HttpServlet {
 
 		try {
 			ServletContext sc = this.getServletContext();
-			Connection conn = (Connection) sc.getAttribute("conn");  
-			
 			MemberDao memberDao = new MemberDao();
-			memberDao.setConnetion(conn);
+			
 			
 			memberDao.insert(new Member()
 				.setEmail(request.getParameter("email"))

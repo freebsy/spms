@@ -9,7 +9,10 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
+import org.apache.commons.dbcp.BasicDataSource;
+
 import spms.dao.MemberDao;
+import spms.util.DBConnectionPool;
 
 @WebListener
 public class ContextLoaderListener implements ServletContextListener {
@@ -19,15 +22,22 @@ public class ContextLoaderListener implements ServletContextListener {
     }
 
     public void contextInitialized(ServletContextEvent event)  { 
+    	
     	ServletContext sc = event.getServletContext();
     	try {
-			Class.forName(sc.getInitParameter("driver"));
-			conn = DriverManager.getConnection(
-						sc.getInitParameter("url"),
-						sc.getInitParameter("username"),
-						sc.getInitParameter("password"));
+			String driver = sc.getInitParameter("driver");
+			String url = sc.getInitParameter("url");
+			String username = sc.getInitParameter("username");
+			String password = sc.getInitParameter("password");
+			
+			BasicDataSource ds = new BasicDataSource();
+			ds.setDriverClassName(driver);
+			ds.setUrl(url);
+			ds.setUsername(username);
+			ds.setPassword(password);
+    		
 			MemberDao memberDao = new MemberDao();
-			memberDao.setConnetion(conn);
+			memberDao.setDs(ds);
 			sc.setAttribute("memberDao", memberDao);
 		} catch(Exception e) {
 			e.printStackTrace();

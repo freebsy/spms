@@ -7,26 +7,33 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sql.DataSource;
 
+import org.apache.commons.dbcp.BasicDataSource;
 
+import spms.util.DBConnectionPool;
 import spms.vo.Member;
 
 public class MemberDao {
-	 Connection connection;
+	
+	BasicDataSource ds;
 	 
-	 public void setConnetion(Connection connection) {
-		 this.connection = connection; 
-	 }
+	public void setDs(BasicDataSource ds) {
+		this.ds = ds;
+	}
+	
 	 
 	 //회원 로그인
 	 
 	 
 	 //회원정보 변경
 	 public int update(Member member) throws Exception {
+		 Connection connection = null;	
 		 PreparedStatement stmt = null;
 		 
 		 try{
-			stmt = connection.prepareStatement(
+			 connection = ds.getConnection();	
+			 stmt = connection.prepareStatement(
 					"UPDATE MEMBERS SET EMAIL=?,MNAME=?,MOD_DATE=now()"
 					+ " WHERE MNO=?");
 			stmt.setString(1,member.getEmail());
@@ -45,10 +52,12 @@ public class MemberDao {
 	 
 	 //회원 상세 정보 조회
 	 public Member selectOne(int no) throws Exception {
+		 Connection connection = null;	
 		 Statement stmt = null;
 		 ResultSet rs = null;
 		 
 		 try{
+			 connection = ds.getConnection();	
 			 stmt = connection.createStatement();
 				rs = stmt.executeQuery(
 					"SELECT MNO,EMAIL,MNAME,CRE_DATE FROM MEMBERS" + 
@@ -70,13 +79,16 @@ public class MemberDao {
 		 }finally{
 			try {if (rs != null) rs.close();} catch(Exception e) {}
 			try {if (stmt != null) stmt.close();} catch(Exception e) {}
+			if (connection != null)  {connection.close();}
 		 }
 	 }
 	 //회원 삭제
 	 public int delete(int no) throws Exception {
+		 Connection connection = null;	
 		 Statement stmt = null;
 		 
 		 try {
+			 connection = ds.getConnection();	
 			 stmt = connection.createStatement();
 			 return stmt.executeUpdate("DELETE FROM MEMBERS WHERE MNO="+ 
 						no);
@@ -85,15 +97,18 @@ public class MemberDao {
 			 throw e;
 		 } finally {
 			 try {if (stmt != null) stmt.close();} catch(Exception e) {}
+			 if (connection != null)  {connection.close();}
 		 }  
 	 }
 	 
 	 //회원 추가
 	 public int insert(Member member) throws Exception {
-	 		PreparedStatement stmt = null;
+			 Connection connection = null;	
+			 PreparedStatement stmt = null;
 	 		
 		 try {
-		 	stmt = connection.prepareStatement(
+			 connection = ds.getConnection();	
+			 stmt = connection.prepareStatement(
 					"INSERT INTO MEMBERS(EMAIL,PWD,MNAME,CRE_DATE,MOD_DATE)"
 					+ " VALUES (?,?,?,NOW(),NOW())");
 			stmt.setString(1,member.getEmail());
@@ -105,16 +120,19 @@ public class MemberDao {
 		 		throw e;
 		 	} finally {
 		 	try {if (stmt != null) stmt.close();} catch(Exception e) {}
+		 	if (connection != null) {connection.close();}
 		 	}
 	 }
 	 //회원 리스트
 	 public List<Member> selectList() throws Exception {
+		 	Connection connection = null;
 		 	Statement stmt = null;
 			ResultSet rs = null;
 			ArrayList<Member> members = new ArrayList<Member>();
 		 try {
-				stmt = connection.createStatement();
-				rs = stmt.executeQuery(
+			 connection = ds.getConnection();	
+			 stmt = connection.createStatement();
+			 rs = stmt.executeQuery(
 						"SELECT MNO,MNAME,EMAIL,CRE_DATE" + 
 						" FROM MEMBERS" +
 						" ORDER BY MNO ASC");
@@ -132,6 +150,7 @@ public class MemberDao {
 		}finally {
 			try {if (rs != null) rs.close();} catch(Exception e) {}
 			try {if (stmt != null) stmt.close();} catch(Exception e) {}	
+			if (connection != null) {connection.close();}
 		}
 		 return members; 
 	 }
